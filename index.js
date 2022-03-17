@@ -17,7 +17,7 @@ server.get('/test', (req, res) => {
 let userCount = 0;
 const speed = 20;
 const goal = 450;
-const step = 0.5;
+const step = 1;
 let players = [];
 io.on('connection', (socket) => {
 	userCount++;
