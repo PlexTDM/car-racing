@@ -15,20 +15,19 @@ server.get('/test', (req, res) => {
 	res.sendFile(path.join(__dirname, 'public/socket.html'))
 })
 let userCount = 0;
+const speed = 20;
+const goal = 450;
+const step = 0.5;
 io.on('connection', (socket) => {
 	userCount++;
 	console.log('users: ', userCount);
+	socket.emit('init', speed, goal);
 	socket.on('move', (player, x) => {
-		// socket.broadcast.emit('move', player, x);
-		socket.broadcast.emit('move', player, x);
+		socket.broadcast.emit('move', player, x, step);
 	});
 	socket.on("disconnecting", () => {
-		userCount--
-		for (const room of socket.rooms) {
-			if (room !== socket.id) {
-				socket.to(room).emit("user has left. Remaining: ", userCount);
-			}
-		}
+		userCount--;
+		console.log('user has left. Remaining: ', userCount);
 	})
 })
 

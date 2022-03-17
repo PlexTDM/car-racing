@@ -4,6 +4,21 @@
 <head>
 	<title>canvas</title>
 	<style type="text/css">
+		.container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
+		.buttons{
+			display: flex;
+			width: 50%;
+			justify-content: space-evenly;
+			align-items: center;
+			flex-direction: row;
+			padding: 2px;
+			margin-top: 8px;
+		}
 		#canvas {
 			border: 1px solid black;
 		}
@@ -11,18 +26,22 @@
 </head>
 
 <body>
-	<canvas width="500" height="500" id="canvas"></canvas>
-	<!-- <button id="move" onclick="restart()">restart</button> -->
-	<br />
-	<button id="move">player1</button>
-	<button id="move1">player2</button>
-	<button id="move2">player3</button>
+	<div class="container">
+		<canvas width="500" height="500" id="canvas"></canvas>
+		<!-- <button id="move" onclick="restart()">restart</button> -->
+		<div class="buttons">
+			<button id="move">player1</button>
+			<button id="move1">player2</button>
+			<button id="move2">player3</button>
+		</div>
+	</div>
 	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<!-- <script src="/static/canvas.js"></script></script> -->
-	<script src="/static/canvasMuliplayer.js"></script></script>
-	
+	<script src="/static/canvasMuliplayer.js"></script>
+	</script>
+
 </body>
 
 </html>
