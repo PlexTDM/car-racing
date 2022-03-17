@@ -18,16 +18,29 @@ let userCount = 0;
 const speed = 20;
 const goal = 450;
 const step = 0.5;
+let players = [];
 io.on('connection', (socket) => {
 	userCount++;
-	console.log('users: ', userCount);
-	socket.emit('init', speed, goal);
-	socket.on('move', (player, x) => {
-		socket.broadcast.emit('move', player, x, step);
-	});
-	socket.on("disconnecting", () => {
+	socket.on('add', player => {
+		players.push(player);
+		console.log(players.length);
+
+		socket.local.emit('newPlayer', players);
+		socket.emit('newPlayer', players);
+		// console.log('users: ', userCount);
+		socket.emit('init', speed, goal, step);
+
+		socket.on('move', (id, x) => {
+			socket.broadcast.emit('move', id, x);
+		});
+	})
+
+	socket.on("disconnect", () => {
 		userCount--;
-		console.log('user has left. Remaining: ', userCount);
+		players.map((player, index) => {
+			if (player.id == socket.id) players.splice(index, 1)
+		})
+		// console.log('user has left. Remaining: ', userCount);
 	})
 })
 

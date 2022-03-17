@@ -1,10 +1,8 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const moveBtn = document.getElementById('move');
-const moveBtn1 = document.getElementById('move1');
-const moveBtn2 = document.getElementById('move2');
 const width = canvas.width;
 const height = canvas.height;
+const socket = io();
 // const speed = 15;
 // const goal = 450;
 let speed;
@@ -12,42 +10,22 @@ let goal;
 let step;
 ctx.fillStyle = '#000';
 let alerting = false;
+let thisPlayer = {
+    id: '',
+    x: 0,
+    score: 0,
+    name: 'Tengis',
+    key: 'Space',
+    path: 0
+}
+let players = [];
 
-const socket = io();
-
-socket.on("init", (sp, g, st) => {
-    speed = sp;
-    goal = g;
-    step = st;
-})
-
-let players = [
-    player1 = {
-        x: 0,
-        score: 0,
-        name: 'baldan',
-        key: 'KeyA',
-        path: 0
-    },
-    player2 = {
-        x: 0,
-        score: 0,
-        name: 'gey',
-        key: 'Space',
-        path: 0
-    },
-    player3 = {
-        x: 0,
-        score: 0,
-        name: 'shees',
-        key: 'KeyL',
-        path: 0
+window.addEventListener("keyup", (e) => {
+    if (e.code === thisPlayer.key) {
+        thisPlayer.path += speed;
+        console.log(speed)
     }
-]
-
-socket.on('move', (player,x) => {
-    players[player].x = x;
-})
+});
 
 let img = new Image;
 img.src = 'http://localhost:3000/static/car.png';
@@ -55,7 +33,7 @@ let gif = new Image;
 gif.src = 'http://localhost:3000/static/giphy.gif';
 
 const restart = () => {
-    players.map((player) => {
+    players.map(player => {
         player.x = 0;
         player.path = 0;
     })
@@ -63,7 +41,7 @@ const restart = () => {
     window.requestAnimationFrame(refresh);
 }
 
-const showAlert = (player) => {
+const showAlert = player => {
     if (!player) return;
     alerting = true;
     swal.fire({
@@ -93,20 +71,39 @@ const refresh = () => {
     players.forEach((player, index) => {
         checkPlayerWin(player)
         ctx.drawImage(img, player.x, 80 * index, 50, 50);
-        ctx.fillText(player.name, player.x, (80 * index)+10);
-        for (let i = player.path; i > 0; i--) {
+        ctx.fillText(player.name, player.x, (80 * index) + 10);
+        if(player.id !== thisPlayer.id) return
+        for (let i = thisPlayer.path; i > 0; i--) {
             player.x += 0.2;
-            player.path -= 0.2;
-            socket.emit("move", index,player.x);
+            thisPlayer.path -= 0.2;
+            socket.emit("move", thisPlayer.id, player.x);
         }
     })
     window.requestAnimationFrame(refresh)
 }
-players.forEach((player) => {
-    window.addEventListener("keyup", (e) => {
-        if (e.code === player.key) {
-            player.path += speed;
-        }
-    });
+
+socket.on('connect', () => {
+    thisPlayer.name = 'tengis';
+    thisPlayer.id = socket.id;
+    socket.emit('add', thisPlayer);
+    players.push(thisPlayer);
+});
+
+socket.on("init", (sp, g, st) => {
+    speed = sp;
+    goal = g;
+    step = st;
 })
+
+socket.on('newPlayer', (pl) => {
+    players = pl
+})
+
+
+socket.on('move', (id, x) => {
+    players.map((player) => {
+        if (player.id === id) player.x = x;
+    })
+})
+
 window.requestAnimationFrame(refresh);
