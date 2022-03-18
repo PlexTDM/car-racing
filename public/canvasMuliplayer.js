@@ -28,9 +28,9 @@ window.addEventListener("keyup", (e) => {
 });
 
 let img = new Image;
-img.src = 'http://localhost:3000/static/car.png';
+img.src = '/static/car.png';
 let gif = new Image;
-gif.src = 'http://localhost:3000/static/giphy.gif';
+gif.src = '/static/giphy.gif';
 
 const restart = () => {
     players.map(player => {
