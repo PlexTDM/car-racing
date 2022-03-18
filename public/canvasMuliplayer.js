@@ -23,7 +23,6 @@ let players = [];
 window.addEventListener("keyup", (e) => {
     if (e.code === thisPlayer.key) {
         thisPlayer.path += speed;
-        console.log(speed)
     }
 });
 
